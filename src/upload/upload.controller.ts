@@ -28,7 +28,7 @@ export class UploadController {
     await this.uploadService.upload(file.originalname, file.buffer);
   }
 
-  @Get('get')
+  @Get()
   async download(@Query('key') key: string): Promise<{ url: string }> {
     return this.uploadService.getDownloadUrl(key);
   }
