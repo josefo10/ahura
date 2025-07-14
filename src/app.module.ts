@@ -8,6 +8,9 @@ import { LoggerModule } from './loggers/logger.module';
 import { CommentModule } from './comments/comment.module';
 import { AssetModule } from './assets/asset.module';
 
+import { ConfigModule } from '@nestjs/config';
+import { UploadModule } from './upload/upload.module';
+
 @Module({
   imports: [
     HttpModule,
@@ -18,6 +21,8 @@ import { AssetModule } from './assets/asset.module';
     LoggerModule,
     CommentModule,
     AssetModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

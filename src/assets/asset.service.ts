@@ -20,6 +20,7 @@ export class AssetService {
       const created = new this.assetModel(dto);
       return await created.save();
     } catch (error) {
+      console.log('Error creating asset:', error);
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Error creating asset');
     }
