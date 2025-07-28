@@ -10,6 +10,7 @@ import { AssetModule } from './assets/asset.module';
 
 import { ConfigModule } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UploadModule } from './upload/upload.module';
     AssetModule,
     ConfigModule.forRoot({ isGlobal: true }),
     UploadModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
