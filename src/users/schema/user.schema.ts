@@ -5,8 +5,8 @@ export type UserDocument = User & Document;
 
 @Schema({ timestamps: { createdAt: 'createAt', updatedAt: 'updateAt' } })
 export class User {
-  toJSON(): { [x: string]: any; password: any; } {
-      throw new Error('Method not implemented.');
+  toJSON(): { [x: string]: any; password: any } {
+    throw new Error('Method not implemented.');
   }
   @Prop({ required: true, unique: true })
   id: string;
