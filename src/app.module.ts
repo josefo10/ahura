@@ -16,7 +16,7 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     HttpModule,
     MongooseModule.forRoot(
-      'mongodb+srv://josefo1020:xNyQXxNFmB8Y6X9H@cluster0.naebbm1.mongodb.net/AHURA',
+      'mongodb+srv://josefo1020:UHkcghGz8hgssLz8@cluster0.naebbm1.mongodb.net//AHURA',
     ),
     UserModule,
     LoggerModule,
