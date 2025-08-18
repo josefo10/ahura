@@ -47,13 +47,22 @@ export class CommentService {
     }
   }
 
-  async update(id: string, updateDto: UpdateCommentDto): Promise<Comment> {
+  async update(
+    id: string,
+    authorId: string,
+    updateDto: UpdateCommentDto,
+  ): Promise<Comment> {
+    console.log('entro al update');
     try {
       const updated = await this.commentModel
-        .findOneAndUpdate({ id }, updateDto, { new: true })
+        .findOneAndUpdate({ id, authorId }, updateDto, { new: true })
         .exec();
+      console.log('Que hiz updata', updated);
+
       if (!updated) {
-        throw new NotFoundException(`Comment with id ${id} not found`);
+        throw new NotFoundException(
+          `Comment with id ${id} not found or not authored by user ${authorId}`,
+        );
       }
       return updated;
     } catch (error) {
@@ -62,11 +71,15 @@ export class CommentService {
     }
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, authorId: string): Promise<void> {
     try {
-      const result = await this.commentModel.findOneAndDelete({ id }).exec();
+      const result = await this.commentModel
+        .findOneAndDelete({ id, authorId })
+        .exec();
       if (!result) {
-        throw new NotFoundException(`Comment with id ${id} not found`);
+        throw new NotFoundException(
+          `Comment with id ${id} not found or not authored by user ${authorId}`,
+        );
       }
     } catch (error) {
       if (error instanceof NotFoundException) throw error;

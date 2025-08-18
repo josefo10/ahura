@@ -10,8 +10,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   canActivate(context: ExecutionContext) {
+    console.log('entro al jwt');
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const isPublic = this.reflector.get(IS_PUBLIC_KEY, context.getHandler());
+    console.log(isPublic);
+
     if (isPublic) {
       return true;
     }

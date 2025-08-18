@@ -12,6 +12,8 @@ export class AuthController {
   @Post('/login')
   login(@Req() req: Request) {
     const user = req.user as User;
+    console.log('Que viene controller', user);
+
     return this.authService.generateJWT(user);
   }
 }

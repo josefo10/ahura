@@ -33,7 +33,7 @@ export class AssetController {
   @ApiOperation({ summary: 'Get all assets' })
   @ApiResponse({ status: 200, description: 'List of assets', type: [Asset] })
   @Get()
-  @Roles('user', 'administrador', 'super_administrador')
+  @Roles('usuario', 'administrador', 'super_administrador')
   findAll() {
     return this.assetService.findAll();
   }
@@ -41,7 +41,7 @@ export class AssetController {
   @ApiOperation({ summary: 'Get asset by ID' })
   @ApiResponse({ status: 200, description: 'Asset found', type: Asset })
   @Get(':id')
-  @Roles('user', 'administrador', 'super_administrador')
+  @Roles('usuario', 'administrador', 'super_administrador')
   findOne(@Param('id') id: string) {
     return this.assetService.findOne(id);
   }

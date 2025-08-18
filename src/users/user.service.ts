@@ -63,6 +63,7 @@ export class UserService {
       }
       return user;
     } catch (error) {
+      console.log(error);
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Error buscando el usuario');
     }

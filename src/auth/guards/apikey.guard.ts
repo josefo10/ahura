@@ -16,6 +16,8 @@ export class ApikeyGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    console.log('entro a la key');
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const isPublic = this.reflector.get(IS_PUBLIC_KEY, context.getHandler());
     if (isPublic) {

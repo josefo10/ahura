@@ -15,8 +15,10 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    console.log('entro al rol');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const roles = this.reflector.get(ROLES_KEY, context.getHandler());
+    console.log(roles);
     if (!roles) {
       return true;
     }

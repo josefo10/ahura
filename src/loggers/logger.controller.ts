@@ -25,7 +25,7 @@ export class LoggerController {
   constructor(private readonly loggerService: LoggerService) {}
 
   @Post()
-  @Roles('user', 'administrador', 'super_administrador')
+  @Roles('usuario', 'administrador', 'super_administrador')
   create(@Body() createDto: CreateLoggerDto) {
     return this.loggerService.create(createDto);
   }

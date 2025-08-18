@@ -37,9 +37,17 @@ export class UploadController {
     await this.uploadService.upload(file.originalname, file.buffer);
   }
 
-  @Get()
-  @Roles('administrador', 'super_administrador')
-  async download(@Query('key') key: string): Promise<{ url: string }> {
+  // GET /upload/download?key=...
+  @Get('download')
+  @Roles('usuario', 'administrador', 'super_administrador')
+  download(@Query('key') key: string) {
     return this.uploadService.getDownloadUrl(key);
+  }
+
+  // GET /upload/preview?key=...
+  @Get('preview')
+  @Roles('usuario', 'administrador', 'super_administrador')
+  preview(@Query('key') key: string) {
+    return this.uploadService.getPreviewUrl(key);
   }
 }
