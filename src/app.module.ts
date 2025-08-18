@@ -10,12 +10,13 @@ import { AssetModule } from './assets/asset.module';
 
 import { ConfigModule } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     HttpModule,
     MongooseModule.forRoot(
-      'mongodb+srv://josefo1020:xNyQXxNFmB8Y6X9H@cluster0.naebbm1.mongodb.net/AHURA',
+      `mongodb+srv://josefo1020:UHkcghGz8hgssLz8@cluster0.naebbm1.mongodb.net/AHURA`,
     ),
     UserModule,
     LoggerModule,
@@ -23,6 +24,7 @@ import { UploadModule } from './upload/upload.module';
     AssetModule,
     ConfigModule.forRoot({ isGlobal: true }),
     UploadModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

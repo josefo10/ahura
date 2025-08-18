@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,10 +17,15 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<any> {
     try {
       const created = new this.userModel(createUserDto);
-      return await created.save();
+      const hashPassword = await bcrypt.hash(created.password, 10);
+      created.password = hashPassword;
+      const model = await created.save();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...rta } = model.toJSON();
+      return rta;
     } catch (error) {
       // Aquí maneja errores de validación o de BD
       if (error instanceof NotFoundException) throw error;
@@ -49,7 +55,7 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User> {
     try {
       const user = await this.userModel.findOne({ email }).exec();
       if (!user) {
@@ -57,6 +63,7 @@ export class UserService {
       }
       return user;
     } catch (error) {
+      console.log(error);
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Error buscando el usuario');
     }

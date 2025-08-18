@@ -1,8 +1,10 @@
+// upload.service.ts
 import { Injectable } from '@nestjs/common';
 import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -10,39 +12,69 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 @Injectable()
 export class UploadService {
   private client: S3Client;
-  constructor(private readonly configService: ConfigService) {
+  private bucket: string;
+
+  constructor(private readonly config: ConfigService) {
     this.client = new S3Client({
-      region: this.configService.getOrThrow('AWS_S3_REGION'),
+      region: this.config.getOrThrow('AWS_S3_REGION'),
       credentials: {
-        accessKeyId: this.configService.getOrThrow('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.getOrThrow('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId: this.config.getOrThrow('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.config.getOrThrow('AWS_SECRET_ACCESS_KEY'),
       },
     });
+    this.bucket = this.config.getOrThrow('AWS_S3_BUCKET');
   }
 
-  async upload(fileName: string, file: Buffer) {
-    const u = await this.client.send(
+  // ⬇️ PASA también el mimetype (file.mimetype)
+  async upload(fileName: string, file: Buffer, mime?: string) {
+    const put = await this.client.send(
       new PutObjectCommand({
-        Bucket: this.configService.getOrThrow('AWS_S3_BUCKET'),
+        Bucket: this.bucket,
         Key: fileName,
         Body: file,
+        ContentType: mime ?? 'application/octet-stream',
+        // ContentDisposition: 'inline', // opcional como default en el objeto
+        // ACL: 'private' (recomendado)
       }),
     );
-    console.log({
+    return {
       fileName,
-      eTag: u.ETag,
-      status: u.$metadata.httpStatusCode,
-    });
-    return u;
+      eTag: put.ETag,
+      status: put.$metadata.httpStatusCode,
+    };
   }
 
-  async getDownloadUrl(key: string) {
-    const command = new GetObjectCommand({
-      Bucket: this.configService.getOrThrow('AWS_S3_BUCKET'),
+  // 🔽 Forzar DESCARGA
+  async getDownloadUrl(key: string, expiresIn = 900) {
+    const cmd = new GetObjectCommand({
+      Bucket: this.bucket,
       Key: key,
+      ResponseContentDisposition: `attachment; filename="${encodeURIComponent(key)}"; filename*=UTF-8''${encodeURIComponent(key)}`,
     });
-    // 15 min (900 s) de validez
-    const url = await getSignedUrl(this.client, command, { expiresIn: 900 });
+    const url = await getSignedUrl(this.client, cmd, { expiresIn });
+    return { url };
+  }
+
+  // 🔽 PREVISUALIZACIÓN (inline)
+  async getPreviewUrl(key: string, expiresIn = 900) {
+    // (Opcional) leer el ContentType real del objeto
+    let contentType = 'application/octet-stream';
+    try {
+      const head = await this.client.send(
+        new HeadObjectCommand({ Bucket: this.bucket, Key: key }),
+      );
+      if (head.ContentType) contentType = head.ContentType;
+    } catch {
+      // si falla HeadObject, seguimos con octet-stream
+    }
+
+    const cmd = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      ResponseContentDisposition: `inline; filename="${encodeURIComponent(key)}"; filename*=UTF-8''${encodeURIComponent(key)}`,
+      ResponseContentType: contentType,
+    });
+    const url = await getSignedUrl(this.client, cmd, { expiresIn });
     return { url };
   }
 }
