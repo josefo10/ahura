@@ -11,6 +11,7 @@ import { AssetModule } from './assets/asset.module';
 import { ConfigModule } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
+import { CatalogModule } from './catalogs/catalog.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({ isGlobal: true }),
     UploadModule,
     AuthModule,
+    CatalogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
