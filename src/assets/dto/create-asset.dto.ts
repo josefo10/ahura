@@ -64,4 +64,5 @@ export class CreateAssetDto {
 
   @ApiProperty({ description: 'The status of the asset' })
   readonly status?: string;
+  origin: string;
 }

@@ -2,27 +2,67 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { Asset, AssetDocument } from './schemas/asset.schema';
+import { CatalogService } from 'src/catalogs/catalog.service';
 
 @Injectable()
 export class AssetService {
   constructor(
     @InjectModel(Asset.name) private assetModel: Model<AssetDocument>,
+    private readonly catalogs: CatalogService,
   ) {}
 
-  async create(dto: CreateAssetDto): Promise<Asset> {
+  async create(createAssetDto: CreateAssetDto): Promise<Asset> {
     try {
-      const created = new this.assetModel(dto);
+      // 1) valida enums con catálogo
+      await this.catalogs.validateAssetEnums(createAssetDto);
+
+      // 2) normaliza opcionales para evitar undefined vs string
+      const payload: Partial<Asset> = {
+        ...createAssetDto,
+        description: createAssetDto.description ?? '',
+        image: createAssetDto.image ?? '',
+        activeKnowledgeType: createAssetDto.activeKnowledgeType ?? '',
+        format: createAssetDto.format ?? '',
+        fileUri: createAssetDto.fileUri ?? '',
+        relatedIds: createAssetDto.relatedIds ?? [],
+        keywords: createAssetDto.keywords ?? [],
+        responsibleOwner: createAssetDto.responsibleOwner ?? '',
+        confidentiality: createAssetDto.confidentiality ?? false,
+        criticality: createAssetDto.criticality ?? 'leve',
+        status: createAssetDto.status ?? 'en curso',
+      };
+
+      const created = new this.assetModel(payload);
       return await created.save();
     } catch (error) {
-      console.log('Error creating asset:', error);
       if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Error creating asset');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      throw new BadRequestException(error?.message ?? 'Error creating asset');
+    }
+  }
+
+  async update(id: string, updateAssetDto: UpdateAssetDto): Promise<Asset> {
+    try {
+      // valida solo lo que venga
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      await this.catalogs.validateAssetEnums(updateAssetDto as any);
+
+      const updated = await this.assetModel
+        .findOneAndUpdate({ id }, updateAssetDto, { new: true })
+        .exec();
+      if (!updated)
+        throw new NotFoundException(`Asset with id ${id} not found`);
+      return updated;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Error updating asset');
     }
   }
 
@@ -43,20 +83,6 @@ export class AssetService {
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Error fetching asset');
-    }
-  }
-
-  async update(id: string, dto: UpdateAssetDto): Promise<Asset> {
-    try {
-      const updated = await this.assetModel
-        .findOneAndUpdate({ id }, dto, { new: true })
-        .exec();
-      if (!updated)
-        throw new NotFoundException(`Asset with id ${id} not found`);
-      return updated;
-    } catch (error) {
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Error updating asset');
     }
   }
 
