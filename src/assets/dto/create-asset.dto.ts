@@ -64,5 +64,16 @@ export class CreateAssetDto {
 
   @ApiProperty({ description: 'The status of the asset' })
   readonly status?: string;
-  origin: string;
+
+  @ApiProperty({ description: 'The origin of the asset' })
+  readonly origin: string;
+
+  @ApiProperty({ description: 'The view count of the asset' })
+  readonly viewCount: number;
+
+  @ApiProperty({ description: 'The download count of the asset' })
+  readonly downloadCount: number;
+
+  @ApiProperty({ description: 'The comment count of the asset' })
+  readonly commentCount: number;
 }

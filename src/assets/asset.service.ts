@@ -37,6 +37,7 @@ export class AssetService {
         confidentiality: createAssetDto.confidentiality ?? false,
         criticality: createAssetDto.criticality ?? 'leve',
         status: createAssetDto.status ?? 'en curso',
+        origin: createAssetDto.origin ?? 'interno',
       };
 
       const created = new this.assetModel(payload);

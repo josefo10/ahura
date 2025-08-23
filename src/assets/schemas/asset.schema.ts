@@ -147,6 +147,22 @@ export class Asset {
   @ApiProperty({ description: 'The status of the asset' })
   @Prop()
   status: string;
+
+  @ApiProperty({ description: 'The origin of the asset' })
+  @Prop()
+  origin: string;
+
+  @ApiProperty({ description: 'The number of views of the asset' })
+  @Prop({ default: 0 })
+  viewCount: number;
+
+  @ApiProperty({ description: 'The number of downloads of the asset' })
+  @Prop({ default: 0 })
+  downloadCount: number;
+
+  @ApiProperty({ description: 'The number of comments on the asset' })
+  @Prop({ default: 0 })
+  commentCount: number;
 }
 
 export type AssetDocument = Asset & Document;
