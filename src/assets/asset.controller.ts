@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Query,
   Post,
   Body,
   Patch,
@@ -11,6 +12,7 @@ import {
 import { AssetService } from './asset.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
+import { FindAssetsQueryDto } from './dto/find-assets.query.dto';
 import { ApikeyGuard } from 'src/auth/guards/apikey.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -34,8 +36,8 @@ export class AssetController {
   @ApiResponse({ status: 200, description: 'List of assets', type: [Asset] })
   @Get()
   @Roles('usuario', 'administrador', 'super_administrador')
-  findAll() {
-    return this.assetService.findAll();
+  findAll(@Query() q: FindAssetsQueryDto) {
+    return this.assetService.findAll(q);
   }
 
   @ApiOperation({ summary: 'Get asset by ID' })
