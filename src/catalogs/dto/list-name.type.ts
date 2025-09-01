@@ -7,4 +7,5 @@ export type CatalogListName =
   | 'criticalityEnum'
   | 'assetStatusEnum'
   | 'commentStatusEnum'
-  | 'loggerActionEnum';
+  | 'loggerActionEnum'
+  | 'repositoryEnum';

@@ -29,4 +29,7 @@ export class UpdateCatalogDto {
 
   @ApiProperty({ type: [EnumItemDto] })
   loggerActionEnum?: EnumItemDto[];
+
+  @ApiProperty({ type: [EnumItemDto] })
+  repositoryEnum?: EnumItemDto[];
 }

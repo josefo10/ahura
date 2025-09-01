@@ -31,4 +31,7 @@ export class CreateCatalogDto {
 
   @ApiProperty({ type: [EnumItemDto] })
   loggerActionEnum?: EnumItemDto[];
+
+  @ApiProperty({ type: [EnumItemDto] })
+  repositoryEnum?: EnumItemDto;
 }

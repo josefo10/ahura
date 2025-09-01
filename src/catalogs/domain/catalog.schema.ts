@@ -48,6 +48,9 @@ export class Catalog {
   @Prop({ type: [EnumItemSchema], default: [] })
   loggerActionEnum: EnumItem[];
 
+  @Prop({ type: [EnumItemSchema], default: [] })
+  repositoryEnum: EnumItem[];
+
   @Prop({ type: Date, default: Date.now })
   updatedAt: Date;
 }
