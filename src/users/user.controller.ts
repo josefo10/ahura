@@ -27,6 +27,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({ summary: 'Create new user' })
+  //@Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
@@ -35,7 +36,6 @@ export class UserController {
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'List of users', type: [User] })
   @Get()
-  //@Public()
   @Roles('super_administrador')
   findAll() {
     return this.userService.findAll();

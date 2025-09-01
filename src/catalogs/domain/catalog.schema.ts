@@ -9,6 +9,9 @@ export class EnumItem {
 
   @Prop({ type: String, default: '' })
   descripcion: string;
+
+  @Prop({ type: Boolean, default: true })
+  isActive: boolean;
 }
 export const EnumItemSchema = SchemaFactory.createForClass(EnumItem);
 

@@ -6,4 +6,7 @@ export class EnumItemDto {
 
   @ApiProperty()
   descripcion?: string;
+
+  @ApiProperty()
+  isActive: boolean;
 }
