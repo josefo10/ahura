@@ -4,6 +4,7 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   private transporter: nodemailer.Transporter | null = null;
   private from = process.env.MAIL_FROM || 'no-reply@example.com';
 
@@ -15,6 +16,7 @@ export class EmailService {
     const user = process.env.SMTP_USER;
     const pass = process.env.SMTP_PASS;
     if (host && port && user && pass) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       this.transporter = nodemailer.createTransport({
         host,
         port,
@@ -37,6 +39,7 @@ export class EmailService {
       return;
     }
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const re = await this.transporter.sendMail({
         from: this.from,
         to,
