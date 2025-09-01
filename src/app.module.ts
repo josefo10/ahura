@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalogs/catalog.module';
+import { PasswordResetModule } from './auth/password-reset/password-reset.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CatalogModule } from './catalogs/catalog.module';
     UploadModule,
     AuthModule,
     CatalogModule,
+    PasswordResetModule,
   ],
   controllers: [AppController],
   providers: [AppService],
