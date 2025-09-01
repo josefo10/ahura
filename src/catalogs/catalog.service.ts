@@ -118,6 +118,7 @@ export class CatalogService {
       assetStatusEnum: this.keys(cat.assetStatusEnum),
       commentStatusEnum: this.keys(cat.commentStatusEnum),
       loggerActionEnum: this.keys(cat.loggerActionEnum),
+      repositoryEnum: this.keys(cat.repositoryEnum),
     };
   }
 
@@ -133,6 +134,7 @@ export class CatalogService {
       assetStatusEnum: cat.assetStatusEnum ?? [],
       commentStatusEnum: cat.commentStatusEnum ?? [],
       loggerActionEnum: cat.loggerActionEnum ?? [],
+      repositoryEnum: cat.repositoryEnum ?? [],
     };
   }
 

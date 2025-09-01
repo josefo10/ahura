@@ -22,6 +22,7 @@ export class UserService {
       const created = new this.userModel(createUserDto);
       const hashPassword = await bcrypt.hash(created.password, 10);
       created.password = hashPassword;
+      created.role = 'user';
       const model = await created.save();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...rta } = model.toJSON();
