@@ -55,7 +55,9 @@ npm install
 
 ### 3. Configuración de Variables de Entorno
 
-Crear un archivo `.env` en la raíz del proyecto:
+Crear un archivo `.env` en la raíz del proyecto con todas las configuraciones sensibles:
+
+> ⚠️ **Importante**: Todas las credenciales de base de datos y configuraciones sensibles se manejan a través de variables de entorno para mayor seguridad. Nunca commitar credenciales reales al repositorio.
 
 ```env
 # Base de Datos
@@ -372,6 +374,7 @@ AWS_SECRET_ACCESS_KEY=prod_secret_key
 - **JWT** con expiración configurable
 - **Bcrypt** para hash de contraseñas
 - **Guards** para control de acceso por roles
+- **Variables de entorno** para credenciales de base de datos y configuraciones sensibles
 
 ## 📚 Recursos Adicionales
 
