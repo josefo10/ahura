@@ -7,10 +7,12 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { FindCommentsQueryDto } from './dto/find-comments.query.dto';
 //import { ApikeyGuard } from 'src/auth/guards/apikey.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -38,8 +40,8 @@ export class CommentController {
   })
   @Get()
   @Roles('usuario', 'administrador', 'super_administrador')
-  findAll() {
-    return this.commentService.findAll();
+  findAll(@Query() query: FindCommentsQueryDto) {
+    return this.commentService.findAll(query);
   }
 
   @Get(':id')
