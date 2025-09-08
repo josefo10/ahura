@@ -8,7 +8,7 @@ import { LoggerModule } from './loggers/logger.module';
 import { CommentModule } from './comments/comment.module';
 import { AssetModule } from './assets/asset.module';
 
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalogs/catalog.module';
@@ -16,15 +16,19 @@ import { PasswordResetModule } from './auth/password-reset/password-reset.module
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     HttpModule,
-    MongooseModule.forRoot(
-      `mongodb+srv://josefo1020:UHkcghGz8hgssLz8@cluster0.naebbm1.mongodb.net/AHURA`,
-    ),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
     UserModule,
     LoggerModule,
     CommentModule,
     AssetModule,
-    ConfigModule.forRoot({ isGlobal: true }),
     UploadModule,
     AuthModule,
     CatalogModule,

@@ -3,77 +3,203 @@ import { ClassificationLevel } from '../schemas/asset.schema';
 import { HowIsItStored } from '../schemas/asset.schema';
 import { LegalRegulations } from '../schemas/asset.schema';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  IsDateString,
+  IsNumber,
+  ValidateNested,
+  IsUrl,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateAssetDto {
-  @ApiProperty({ description: 'The id of the asset' })
+  @ApiProperty({ description: 'ID único del activo', example: 'ASSET-001' })
+  @IsNotEmpty()
+  @IsString()
   readonly id: string;
 
-  @ApiProperty({ description: 'The title of the asset' })
+  @ApiProperty({
+    description: 'Título del activo',
+    example: 'Manual de Procedimientos API',
+  })
+  @IsNotEmpty()
+  @IsString()
   readonly title: string;
 
-  @ApiProperty({ description: 'The publish date of the asset' })
+  @ApiProperty({
+    description: 'Fecha de publicación',
+    example: '2024-01-15T10:00:00Z',
+  })
+  @IsNotEmpty()
+  @IsDateString()
   readonly publishDate: Date;
 
-  @ApiProperty({ description: 'The knowledge type of the asset' })
+  @ApiProperty({
+    description: 'Tipo de conocimiento',
+    example: 'Documentación técnica',
+  })
+  @IsNotEmpty()
+  @IsString()
   readonly knowledgeType: string;
 
-  @ApiProperty({ description: 'The description of the asset' })
+  @ApiProperty({
+    description: 'Descripción del activo',
+    example: 'Manual completo para el uso de la API REST',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
   readonly description?: string;
 
-  @ApiProperty({ description: 'The image of the asset' })
+  @ApiProperty({
+    description: 'URL de imagen del activo',
+    example: 'https://example.com/image.jpg',
+    required: false,
+  })
+  @IsOptional()
+  @IsUrl()
   readonly image?: string;
 
-  @ApiProperty({ description: 'The active knowledge type of the asset' })
+  @ApiProperty({
+    description: 'Tipo de conocimiento activo',
+    example: 'Procedimiento',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
   readonly activeKnowledgeType?: string;
 
-  @ApiProperty({ description: 'The format of the asset' })
+  @ApiProperty({
+    description: 'Formato del activo',
+    example: 'PDF',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
   readonly format?: string;
 
-  @ApiProperty({ description: 'The file URI of the asset' })
+  @ApiProperty({
+    description: 'URI del archivo',
+    example: '/uploads/manual.pdf',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
   readonly fileUri?: string;
 
-  @ApiProperty({ description: 'The related IDs of the asset' })
+  @ApiProperty({
+    description: 'IDs de activos relacionados',
+    example: ['ASSET-002', 'ASSET-003'],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   readonly relatedIds?: string[];
 
-  @ApiProperty({ description: 'The keywords of the asset' })
+  @ApiProperty({
+    description: 'Palabras clave',
+    example: ['API', 'REST', 'documentación'],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   readonly keywords?: string[];
 
-  @ApiProperty({ description: 'The availability of the asset' })
+  @ApiProperty({ description: 'Disponibilidad del activo' })
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => Object)
   readonly availability: Availability;
 
-  @ApiProperty({ description: 'The classification level of the asset' })
+  @ApiProperty({ description: 'Nivel de clasificación del activo' })
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => Object)
   readonly classificationLevel: ClassificationLevel;
 
-  @ApiProperty({ description: 'How the asset is stored' })
+  @ApiProperty({ description: 'Cómo se almacena el activo', required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => Object)
   readonly howIsItStored?: HowIsItStored;
 
-  @ApiProperty({ description: 'The legal regulations of the asset' })
+  @ApiProperty({
+    description: 'Regulaciones legales del activo',
+    required: false,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => Object)
   readonly legalRegulations?: LegalRegulations;
 
-  @ApiProperty({ description: 'The owner ID of the asset' })
+  @ApiProperty({ description: 'ID del propietario', example: 'USER-123' })
+  @IsNotEmpty()
+  @IsString()
   readonly ownerId: string;
 
-  @ApiProperty({ description: 'The responsible owner of the asset' })
+  @ApiProperty({
+    description: 'Propietario responsable',
+    example: 'Juan Pérez',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
   readonly responsibleOwner?: string;
 
-  @ApiProperty({ description: 'The confidentiality of the asset' })
+  @ApiProperty({
+    description: 'Confidencialidad del activo',
+    example: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
   readonly confidentiality?: boolean;
 
-  @ApiProperty({ description: 'The criticality of the asset' })
+  @ApiProperty({
+    description: 'Criticidad del activo',
+    example: 'Alta',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
   readonly criticality?: string;
 
-  @ApiProperty({ description: 'The status of the asset' })
+  @ApiProperty({
+    description: 'Estado del activo',
+    example: 'Activo',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
   readonly status?: string;
 
-  @ApiProperty({ description: 'The origin of the asset' })
+  @ApiProperty({ description: 'Origen del activo', example: 'Interno' })
+  @IsNotEmpty()
+  @IsString()
   readonly origin: string;
 
-  @ApiProperty({ description: 'The view count of the asset' })
+  @ApiProperty({ description: 'Contador de vistas', example: 0, default: 0 })
+  @IsOptional()
+  @IsNumber()
   readonly viewCount: number;
 
-  @ApiProperty({ description: 'The download count of the asset' })
+  @ApiProperty({ description: 'Contador de descargas', example: 0, default: 0 })
+  @IsOptional()
+  @IsNumber()
   readonly downloadCount: number;
 
-  @ApiProperty({ description: 'The comment count of the asset' })
+  @ApiProperty({
+    description: 'Contador de comentarios',
+    example: 0,
+    default: 0,
+  })
+  @IsOptional()
+  @IsNumber()
   readonly commentCount: number;
 }

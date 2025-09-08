@@ -5,12 +5,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, FilterQuery, SortOrder, Types } from 'mongoose';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { Asset, AssetDocument } from './schemas/asset.schema';
-import { CatalogService } from 'src/catalogs/catalog.service';
-import { FilterQuery, SortOrder, Types } from 'mongoose';
+import { CatalogService } from '../catalogs/catalog.service';
 import { FindAssetsQueryDto } from './dto/find-assets.query.dto';
 
 @Injectable()
@@ -69,15 +68,6 @@ export class AssetService {
     }
   }
 
-  /*async findAll(): Promise<Asset[]> {
-    try {
-      return await this.assetModel.find().exec();
-    } catch (error) {
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Error fetching assets');
-    }
-  } */
-
   private escapeRegex(input: string) {
     return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
@@ -103,6 +93,7 @@ export class AssetService {
       const q = query || ({} as FindAssetsQueryDto);
       const filter: FilterQuery<AssetDocument> = {};
 
+      // ===== Campos base =====
       if (q.title)
         filter.title = { $regex: this.escapeRegex(q.title), $options: 'i' };
       if (q.description)
@@ -126,6 +117,7 @@ export class AssetService {
       if (q.confidentiality !== undefined)
         filter.confidentiality = q.confidentiality;
 
+      // Rango publishDate
       if (q.publishFrom || q.publishTo) {
         filter.publishDate = {};
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -134,6 +126,7 @@ export class AssetService {
         if (q.publishTo) filter.publishDate.$lte = new Date(q.publishTo);
       }
 
+      // Arrays de búsqueda
       if (q.keywords?.length) {
         filter.keywords = { $all: q.keywords };
       }
@@ -153,15 +146,113 @@ export class AssetService {
         filter.id = { $in: q.businessIds };
       }
 
+      // ===== SUBNIVELES =====
+
+      // availability.*
+      if (q.availabilityAccessibility !== undefined) {
+        filter['availability.accessibility'] = q.availabilityAccessibility;
+      }
+      if (q.availabilityLocation) {
+        filter['availability.location'] = {
+          $regex: this.escapeRegex(q.availabilityLocation),
+          $options: 'i',
+        };
+      }
+
+      // classificationLevel.level
+      if (q.classificationLevelLevel) {
+        filter['classificationLevel.level'] = q.classificationLevelLevel;
+      }
+
+      // howIsItStored.*
+      if (q.howPecetKnowledge) {
+        filter['howIsItStored.pecetKnowledge'] = {
+          $regex: this.escapeRegex(q.howPecetKnowledge),
+          $options: 'i',
+        };
+      }
+      if (q.howCentralicedRepositories) {
+        filter['howIsItStored.centralicedRepositories'] = {
+          $regex: this.escapeRegex(q.howCentralicedRepositories),
+          $options: 'i',
+        };
+      }
+
+      // legalRegulations.* (regex i para flexibilidad)
+      if (q.legalCopyright) {
+        filter['legalRegulations.copyright'] = {
+          $regex: this.escapeRegex(q.legalCopyright),
+          $options: 'i',
+        };
+      }
+      if (q.legalPatents) {
+        filter['legalRegulations.patents'] = {
+          $regex: this.escapeRegex(q.legalPatents),
+          $options: 'i',
+        };
+      }
+      if (q.legalTradeSecrets) {
+        filter['legalRegulations.tradeSecrets'] = {
+          $regex: this.escapeRegex(q.legalTradeSecrets),
+          $options: 'i',
+        };
+      }
+      if (q.legalIndustrialDesigns) {
+        filter['legalRegulations.industrialDesigns'] = {
+          $regex: this.escapeRegex(q.legalIndustrialDesigns),
+          $options: 'i',
+        };
+      }
+      if (q.legalBrands) {
+        filter['legalRegulations.brands'] = {
+          $regex: this.escapeRegex(q.legalBrands),
+          $options: 'i',
+        };
+      }
+      if (q.legalIndustrialIntellectualProperty) {
+        filter['legalRegulations.industrialIntellectualProperty'] = {
+          $regex: this.escapeRegex(q.legalIndustrialIntellectualProperty),
+          $options: 'i',
+        };
+      }
+
+      // Atajo: buscar en TODOS los subcampos legales
+      if (q.legalAny) {
+        const rx = { $regex: this.escapeRegex(q.legalAny), $options: 'i' };
+        filter.$or ??= [];
+        filter.$or.push(
+          { 'legalRegulations.copyright': rx },
+          { 'legalRegulations.patents': rx },
+          { 'legalRegulations.tradeSecrets': rx },
+          { 'legalRegulations.industrialDesigns': rx },
+          { 'legalRegulations.brands': rx },
+          { 'legalRegulations.industrialIntellectualProperty': rx },
+        );
+      }
+
+      // ===== Búsqueda global 'q' =====
       if (q.q) {
         const r = { $regex: this.escapeRegex(q.q), $options: 'i' };
+        // Mantiene lo que ya tenías y añade match en keywords
         filter.$or = [
+          ...(filter.$or ?? []),
           { title: r },
           { description: r },
           { keywords: { $elemMatch: r } },
         ];
       }
 
+      // (Fallback ultra-minimalista): si te llegan keys con notación de puntos
+      // desde el front (y no usas whitelist estricto), mapéalas tal cual.
+      for (const [k, v] of Object.entries(q as Record<string, any>)) {
+        if (k.includes('.') && v !== undefined && v !== '') {
+          // Ej: "legalRegulations.copyright=Creative Commons"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          filter[k] = v;
+        }
+      }
+
+      // Paginación y orden
       const page = Math.max(1, q.page || 1);
       const limit = Math.min(100, Math.max(1, q.limit || 20));
       const skip = (page - 1) * limit;

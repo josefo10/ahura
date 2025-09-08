@@ -18,6 +18,10 @@ export class Comment {
   @Prop({ required: true })
   authorId: string;
 
+  @ApiProperty({ description: 'The user name of the comment author' })
+  @Prop({ required: true })
+  userName: string;
+
   @ApiProperty({ description: 'The text content of the comment' })
   @Prop({ required: true })
   text: string;
@@ -27,7 +31,7 @@ export class Comment {
   status: string;
 
   @ApiProperty({ description: 'The creation date of the comment' })
-  @Prop({ required: true })
+  @Prop({ default: Date.now })
   createdAt: Date;
 }
 

@@ -1,103 +1,405 @@
+# 🚀 AHURA API
+
+Sistema de gestión de activos de conocimiento empresarial construido con NestJS.
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📋 Descripción
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+AHURA es una API RESTful para la gestión integral de activos de conocimiento empresarial. Permite crear, organizar, buscar y gestionar documentos, procedimientos y conocimientos de la organización con un sistema robusto de autenticación, roles y auditoría.
 
-## Description
+### ✨ Características Principales
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 🔐 **Autenticación JWT** con roles (usuario, administrador, super_administrador)
+- 📚 **Gestión de activos** de conocimiento con filtros avanzados
+- 💬 **Sistema de comentarios** con control de autorización
+- 📊 **Logs de auditoría** para seguimiento de actividades
+- 📁 **Subida de archivos** con almacenamiento en AWS S3
+- 🏷️ **Catálogos dinámicos** para clasificación de contenido
+- 🔍 **Búsquedas avanzadas** con paginación y filtros anidados
+- 📖 **Documentación Swagger** completa e interactiva
 
-## Project setup
+## 🛠️ Tecnologías
 
-```bash
-$ npm install
-```
+- **Framework**: NestJS 11.x
+- **Base de Datos**: MongoDB con Mongoose
+- **Autenticación**: JWT + Passport
+- **Documentación**: Swagger/OpenAPI
+- **Validación**: Class Validator + Class Transformer
+- **Almacenamiento**: AWS S3
+- **Testing**: Jest
+- **Linting**: ESLint + Prettier
 
-## Compile and run the project
+## ⚙️ Instalación y Configuración
 
-```bash
-# development
-$ npm run start
+### Prerrequisitos
 
-# watch mode
-$ npm run start:dev
+- Node.js >= 18.x
+- MongoDB >= 5.x
+- AWS S3 Bucket (para archivos)
 
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+### 1. Clonar el Repositorio
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone <repository-url>
+cd ahura
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Instalar Dependencias
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3. Configuración de Variables de Entorno
 
-## Resources
+Crear un archivo `.env` en la raíz del proyecto con todas las configuraciones sensibles:
 
-Check out a few resources that may come in handy when working with NestJS:
+> ⚠️ **Importante**: Todas las credenciales de base de datos y configuraciones sensibles se manejan a través de variables de entorno para mayor seguridad. Nunca commitar credenciales reales al repositorio.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```env
+# Base de Datos
+MONGODB_URI=mongodb://localhost:27017/ahura
 
-## Support
+# JWT
+JWT_SECRET=tu_jwt_secret_muy_seguro
+JWT_EXPIRES_IN=24h
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# API Key
+API_KEY=tu_api_key_secreta
 
-## Stay in touch
+# AWS S3 (Opcional)
+AWS_ACCESS_KEY_ID=tu_access_key
+AWS_SECRET_ACCESS_KEY=tu_secret_key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=tu-bucket-name
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Email (Para reset de contraseña)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASS=tu_password
 
-## License
+# Puerto de la aplicación
+PORT=3000
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 4. Iniciar MongoDB
 
-## Branch
+```bash
+# Con Docker
+docker run -d -p 27017:27017 --name mongodb mongo:latest
 
-- main
-- develop
+# O usar MongoDB Atlas (recomendado para producción)
+```
+
+## 🚀 Ejecución
+
+### Desarrollo
+
+```bash
+# Modo desarrollo con hot reload
+npm run start:dev
+
+# Modo debug
+npm run start:debug
+```
+
+### Producción
+
+```bash
+# Construir la aplicación
+npm run build
+
+# Ejecutar en producción
+npm run start:prod
+```
+
+### Scripts Disponibles
+
+```bash
+npm run build          # Compilar TypeScript
+npm run start          # Iniciar aplicación
+npm run start:dev      # Desarrollo con hot reload
+npm run start:prod     # Modo producción
+npm run lint           # Linting con ESLint
+npm run format         # Formatear código con Prettier
+npm run test           # Ejecutar tests unitarios
+npm run test:e2e       # Tests end-to-end
+npm run test:cov       # Coverage de tests
+```
+
+## 📖 Documentación de la API
+
+### Swagger UI
+
+Una vez iniciada la aplicación, la documentación interactiva estará disponible en:
+
+- **Swagger UI**: `http://localhost:3000/docs`
+- **JSON Schema**: `http://localhost:3000/swagger/json`
+
+### 🔐 Autenticación
+
+La API utiliza dos métodos de autenticación:
+
+#### 1. JWT Bearer Token
+```bash
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+#### 2. API Key (Para servicios externos)
+```bash
+X-API-Key: tu_api_key_secreta
+```
+
+### 📋 Endpoints Principales
+
+#### Autenticación
+- `POST /auth/login` - Login con email y contraseña
+- `POST /auth/password-reset/request` - Solicitar reset de contraseña
+- `POST /auth/password-reset/confirm` - Confirmar reset de contraseña
+
+#### Activos de Conocimiento
+- `GET /assets` - Obtener activos (público, con filtros avanzados)
+- `GET /assets/:id` - Obtener activo por ID (público)
+- `POST /assets` - Crear activo (requiere auth)
+- `PUT /assets/:id` - Actualizar activo (requiere auth)
+- `DELETE /assets/:id` - Eliminar activo (requiere auth)
+
+#### Comentarios
+- `GET /comments` - Obtener comentarios con filtros
+- `GET /comments/:id` - Obtener comentario por ID
+- `POST /comments` - Crear comentario
+- `PATCH /comments/:id/:authorId` - Actualizar comentario (solo autor)
+- `DELETE /comments/:id/:authorId` - Eliminar comentario (solo autor/admin)
+
+#### Usuarios
+- `POST /users` - Crear usuario (público)
+- `GET /users` - Obtener usuarios (solo super_admin)
+- `GET /users/:id` - Obtener usuario por ID
+- `PATCH /users/:id` - Actualizar usuario
+- `DELETE /users/:id` - Eliminar usuario
+
+#### Archivos
+- `POST /upload` - Subir archivo
+- `GET /upload/download?key=...` - Obtener URL de descarga
+- `GET /upload/preview?key=...` - Obtener URL de vista previa
+
+#### Catálogos
+- `GET /catalogs` - Obtener todos los catálogos
+- `GET /catalogs/:slug` - Obtener catálogo por slug
+- `POST /catalogs` - Crear catálogo
+- `PATCH /catalogs/:slug` - Actualizar catálogo
+- `DELETE /catalogs/:slug` - Eliminar catálogo
+
+#### Logs de Auditoría
+- `GET /loggers` - Obtener logs (solo super_admin)
+- `POST /loggers` - Crear log de auditoría
+- `GET /loggers/:id` - Obtener log por ID
+
+## 🔍 Ejemplos de Uso
+
+### Autenticarse y Obtener Token
+
+```bash
+curl -X POST "http://localhost:3000/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@empresa.com",
+    "password": "password123"
+  }'
+```
+
+### Buscar Activos con Filtros
+
+```bash
+# Búsqueda pública sin autenticación
+curl -X GET "http://localhost:3000/assets?q=API&title=Manual&page=1&limit=10"
+
+# Búsqueda avanzada con filtros anidados
+curl -X GET "http://localhost:3000/assets?legalAny=copyright&confidentiality=true&sort=-publishDate"
+```
+
+### Crear un Nuevo Activo
+
+```bash
+curl -X POST "http://localhost:3000/assets" \
+  -H "Authorization: Bearer tu_jwt_token" \
+  -H "X-API-Key: tu_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "ASSET-001",
+    "title": "Manual de API REST",
+    "description": "Guía completa para usar la API",
+    "knowledgeType": "Documentación técnica",
+    "publishDate": "2024-01-15T10:00:00Z",
+    "origin": "Interno",
+    "ownerId": "USER-123",
+    "availability": {
+      "accessibility": true,
+      "location": "Repositorio central"
+    },
+    "classificationLevel": {
+      "level": "Público"
+    },
+    "keywords": ["API", "REST", "documentación"],
+    "viewCount": 0,
+    "downloadCount": 0,
+    "commentCount": 0
+  }'
+```
+
+### Obtener Comentarios de un Activo
+
+```bash
+curl -X GET "http://localhost:3000/comments?assetId=ASSET-001&userName=Juan" \
+  -H "Authorization: Bearer tu_jwt_token"
+```
+
+## 🧪 Testing
+
+```bash
+# Ejecutar todos los tests
+npm run test
+
+# Tests con watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:cov
+
+# Tests end-to-end
+npm run test:e2e
+```
+
+## 🏗️ Estructura del Proyecto
+
+```
+src/
+├── app.controller.ts          # Controlador principal
+├── app.module.ts             # Módulo principal
+├── main.ts                   # Punto de entrada
+│
+├── auth/                     # Módulo de autenticación
+│   ├── controllers/         # Controladores de auth
+│   ├── guards/             # Guards de seguridad
+│   ├── strategies/         # Estrategias de Passport
+│   └── services/           # Servicios de autenticación
+│
+├── assets/                   # Módulo de activos
+│   ├── dto/                # DTOs y validaciones
+│   ├── schemas/            # Schemas de MongoDB
+│   ├── asset.controller.ts # Controlador de activos
+│   └── asset.service.ts    # Lógica de negocio
+│
+├── comments/                 # Módulo de comentarios
+├── users/                   # Módulo de usuarios
+├── upload/                  # Módulo de archivos
+├── catalogs/                # Módulo de catálogos
+├── loggers/                 # Módulo de auditoría
+│
+└── common/                  # Recursos compartidos
+    └── dto/                # DTOs comunes (errores, respuestas)
+```
+
+## 🚀 Despliegue
+
+### Docker
+
+```dockerfile
+# Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["node", "dist/main.js"]
+```
+
+```bash
+# Construir imagen
+docker build -t ahura-api .
+
+# Ejecutar contenedor
+docker run -p 3000:3000 --env-file .env ahura-api
+```
+
+### Docker Compose
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/ahura
+    depends_on:
+      - mongo
+  
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+```
+
+### Variables de Entorno para Producción
+
+```env
+NODE_ENV=production
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/ahura
+JWT_SECRET=super_secret_jwt_key_production
+API_KEY=production_api_key
+AWS_ACCESS_KEY_ID=prod_access_key
+AWS_SECRET_ACCESS_KEY=prod_secret_key
+```
+
+## 🔒 Seguridad
+
+- **Validación de datos** con class-validator
+- **Sanitización** automática de inputs
+- **Rate limiting** configurado
+- **CORS** habilitado
+- **JWT** con expiración configurable
+- **Bcrypt** para hash de contraseñas
+- **Guards** para control de acceso por roles
+- **Variables de entorno** para credenciales de base de datos y configuraciones sensibles
+
+## 📚 Recursos Adicionales
+
+- [Documentación de NestJS](https://docs.nestjs.com)
+- [Mongoose ODM](https://mongoosejs.com)
+- [Swagger/OpenAPI](https://swagger.io)
+- [JWT.io](https://jwt.io)
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crear una rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit los cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir un Pull Request
+
+## 📄 Licencia
+
+Este proyecto es privado y propietario.
+
+## 👥 Equipo
+
+- **Desarrollo**: Equipo AHURA
+- **Framework**: [NestJS](https://nestjs.com)
+
+---
+
+Para más información o soporte, contacta al equipo de desarrollo. 🚀

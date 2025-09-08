@@ -125,9 +125,8 @@ export class PasswordResetService {
     const user = await this.userModel.findOne({ email }).exec();
     if (!user) throw new NotFoundException('User not found.');
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const salt = await bcrypt.genSalt(10);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
     user.password = await bcrypt.hash(dto.newPassword, salt);
     await user.save();
 
