@@ -91,7 +91,26 @@ describe('AssetService', () => {
 
   describe('create', () => {
     it('should create an asset', async () => {
-      const createAssetDto: CreateAssetDto = { id: '1', title: 'test', description: 'test', knowledgeType: 'test', publishDate: new Date(), ownerId: '1', origin: 'test', availability: { accessibility: true, location: 'test' }, classificationLevel: { level: 'test' }, viewCount: 0, downloadCount: 0, commentCount: 0, keywords: [] };
+      const createAssetDto: CreateAssetDto = {
+        id: '1',
+        title: 'test',
+        description: 'test',
+        knowledgeType: 'test',
+        publishDate: '2025-09-04T00:00:00.000Z',
+        ownerId: '1',
+        origin: 'test',
+        availability: {
+          accessibility: true,
+          location: 'test'
+        },
+        classificationLevel: {
+          level: 'test'
+        },
+        viewCount: 0,
+        downloadCount: 0,
+        commentCount: 0,
+        keywords: []
+      };
       
       const result = await service.create(createAssetDto);
       expect(result).toEqual(mockAsset);
