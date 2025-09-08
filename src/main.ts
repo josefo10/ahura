@@ -3,7 +3,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
 
@@ -57,6 +57,9 @@ async function bootstrap() {
     jsonDocumentUrl: 'swagger/json',
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  if (process.env.NODE_ENV !== 'test') {
+    await app.listen(process.env.PORT ?? 3000);
+  }
+  return app;
 }
 void bootstrap();

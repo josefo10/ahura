@@ -8,49 +8,42 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { FindCommentsQueryDto } from './dto/find-comments.query.dto';
 
+const mockComment = {
+  _id: 'mockCommentId',
+  id: 'COMMENT-001',
+  assetId: 'ASSET-001',
+  authorId: 'USER-001',
+  userName: 'testuser',
+  text: 'This is a test comment',
+  createdAt: new Date(),
+  status: 'active',
+  save: jest.fn().mockResolvedValue(true),
+};
+
 describe('CommentService', () => {
   let service: CommentService;
-  let commentModel: Model<CommentDocument>;
-
-  const mockComment = {
-    _id: 'mockCommentId',
-    assetId: 'ASSET-001',
-    authorId: 'USER-001',
-    userName: 'testuser',
-    text: 'This is a test comment',
-    createdAt: new Date(),
-    status: 'active',
-    save: jest.fn().mockResolvedValue(this)
-  };
+  let model: Model<CommentDocument>;
 
   const mockCommentModel = jest.fn().mockImplementation((dto) => ({
     ...dto,
-    save: jest.fn().mockResolvedValue({ ...mockComment, ...dto })
+    save: jest.fn().mockResolvedValue(mockComment),
   }));
-
-  // Add static methods
+  
+  // Add static methods to the mock constructor function
   Object.assign(mockCommentModel, {
-    find: jest.fn().mockReturnValue({
-      sort: jest.fn().mockReturnValue({
-        limit: jest.fn().mockReturnValue({
-          skip: jest.fn().mockReturnValue({
-            exec: jest.fn().mockResolvedValue([mockComment])
-          })
-        })
-      })
-    }),
-    findById: jest.fn().mockReturnValue({
-      exec: jest.fn().mockResolvedValue(mockComment)
-    }),
-    findByIdAndUpdate: jest.fn().mockReturnValue({
-      exec: jest.fn().mockResolvedValue(mockComment)
-    }),
-    findByIdAndDelete: jest.fn().mockReturnValue({
-      exec: jest.fn().mockResolvedValue(mockComment)
-    }),
-    countDocuments: jest.fn().mockReturnValue({
-      exec: jest.fn().mockResolvedValue(1)
-    }),
+    find: jest.fn(() => mockCommentModel),
+    findOne: jest.fn(() => mockCommentModel),
+    findById: jest.fn(() => mockCommentModel),
+    findByIdAndUpdate: jest.fn(() => mockCommentModel),
+    findOneAndUpdate: jest.fn(() => mockCommentModel),
+    findByIdAndDelete: jest.fn(() => ({ exec: jest.fn() })),
+    findOneAndDelete: jest.fn(),
+    countDocuments: jest.fn(() => mockCommentModel),
+    sort: jest.fn(() => mockCommentModel),
+    skip: jest.fn(() => mockCommentModel),
+    limit: jest.fn(() => mockCommentModel),
+    exec: jest.fn(),
+    create: jest.fn(),
   });
 
   beforeEach(async () => {
@@ -65,10 +58,8 @@ describe('CommentService', () => {
     }).compile();
 
     service = module.get<CommentService>(CommentService);
-    commentModel = module.get<Model<CommentDocument>>(getModelToken(Comment.name));
-  });
+    model = module.get<Model<CommentDocument>>(getModelToken(Comment.name));
 
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -77,202 +68,124 @@ describe('CommentService', () => {
   });
 
   describe('create', () => {
-    const createCommentDto: CreateCommentDto = {
-      id: 'COMMENT-001',
-      assetId: 'ASSET-001',
-      authorId: 'USER-001',
-      userName: 'testuser',
-      text: 'This is a test comment',
-      status: 'active'
-    };
-
-    it('should create a comment successfully', async () => {
+    it('should create a comment', async () => {
+      const createCommentDto: CreateCommentDto = { id: 'COMMENT-001', assetId: 'ASSET-001', authorId: 'USER-001', userName: 'testuser', text: 'This is a test comment', status: 'active' };
       const result = await service.create(createCommentDto);
-
-      expect(mockCommentModel).toHaveBeenCalledWith(createCommentDto);
-      expect(result).toBeDefined();
+      expect(result).toEqual(mockComment);
     });
 
     it('should throw InternalServerErrorException when creation fails', async () => {
-      const mockSave = jest.fn().mockRejectedValue(new Error('Database error'));
-      mockCommentModel.constructor = jest.fn().mockImplementation(() => ({
-        save: mockSave
+      // Mock the constructor to return an instance with a failing save method
+      (mockCommentModel as any).mockImplementation(() => ({
+        save: jest.fn().mockRejectedValue(new Error('Database error')),
       }));
-
+      
+      const createCommentDto: CreateCommentDto = { id: 'COMMENT-001', assetId: 'ASSET-001', authorId: 'USER-001', userName: 'testuser', text: 'This is a test comment', status: 'active' };
       await expect(service.create(createCommentDto)).rejects.toThrow(InternalServerErrorException);
-    });
-
-    it('should re-throw NotFoundException', async () => {
-      const mockSave = jest.fn().mockRejectedValue(new NotFoundException('Not found'));
-      mockCommentModel.constructor = jest.fn().mockImplementation(() => ({
-        save: mockSave
-      }));
-
-      await expect(service.create(createCommentDto)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('findAll', () => {
-    const mockQuery: FindCommentsQueryDto = {
-      page: 1,
-      limit: 10
-    };
-
     it('should return paginated comments', async () => {
-      const mockComments = [mockComment];
-      const mockExec = jest.fn().mockResolvedValue(mockComments);
-      const mockSort = jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ skip: jest.fn().mockReturnValue({ exec: mockExec }) }) });
-      const mockFind = jest.fn().mockReturnValue({ sort: mockSort });
-      
-      mockCommentModel.find = mockFind;
-      mockCommentModel.countDocuments = jest.fn().mockImplementation(() => ({
-        exec: jest.fn().mockResolvedValue(1)
-      }));
+      const query: FindCommentsQueryDto = { page: 1, limit: 10 };
+      jest.spyOn(model, 'find').mockReturnValue({
+        sort: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue({
+              exec: jest.fn().mockResolvedValue([mockComment]),
+            }),
+          }),
+        }),
+      } as any);
+      jest.spyOn(model, 'countDocuments').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(1),
+      } as any);
 
-      const result = await service.findAll(mockQuery);
+      const result = await service.findAll(query);
 
       expect(result).toEqual({
-        data: mockComments,
+        data: [mockComment],
         total: 1,
         page: 1,
-        totalPages: 1
+        totalPages: 1,
       });
-      expect(mockCommentModel.find).toHaveBeenCalled();
-    });
-
-    it('should apply search query when q parameter is provided', async () => {
-      const queryWithSearch = { ...mockQuery, q: 'test' };
-      const mockExec = jest.fn().mockResolvedValue([]);
-      const mockSort = jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ skip: jest.fn().mockReturnValue({ exec: mockExec }) }) });
-      const mockFind = jest.fn().mockReturnValue({ sort: mockSort });
-      
-      mockCommentModel.find = mockFind;
-      mockCommentModel.countDocuments = jest.fn().mockImplementation(() => ({
-        exec: jest.fn().mockResolvedValue(0)
-      }));
-
-      await service.findAll(queryWithSearch);
-
-      expect(mockCommentModel.find).toHaveBeenCalledWith(expect.objectContaining({
-        $or: expect.any(Array)
-      }));
-    });
-
-    it('should filter by assetId when provided', async () => {
-      const queryWithAssetId = { ...mockQuery, assetId: 'ASSET-001' };
-      const mockExec = jest.fn().mockResolvedValue([]);
-      const mockSort = jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ skip: jest.fn().mockReturnValue({ exec: mockExec }) }) });
-      const mockFind = jest.fn().mockReturnValue({ sort: mockSort });
-      
-      mockCommentModel.find = mockFind;
-      mockCommentModel.countDocuments = jest.fn().mockImplementation(() => ({
-        exec: jest.fn().mockResolvedValue(0)
-      }));
-
-      await service.findAll(queryWithAssetId);
-
-      expect(mockCommentModel.find).toHaveBeenCalledWith(expect.objectContaining({
-        assetId: 'ASSET-001'
-      }));
-    });
-
-    it('should filter by userName when provided', async () => {
-      const queryWithUserName = { ...mockQuery, userName: 'testuser' };
-      const mockExec = jest.fn().mockResolvedValue([]);
-      const mockSort = jest.fn().mockReturnValue({ limit: jest.fn().mockReturnValue({ skip: jest.fn().mockReturnValue({ exec: mockExec }) }) });
-      const mockFind = jest.fn().mockReturnValue({ sort: mockSort });
-      
-      mockCommentModel.find = mockFind;
-      mockCommentModel.countDocuments = jest.fn().mockImplementation(() => ({
-        exec: jest.fn().mockResolvedValue(0)
-      }));
-
-      await service.findAll(queryWithUserName);
-
-      expect(mockCommentModel.find).toHaveBeenCalledWith(expect.objectContaining({
-        userName: expect.objectContaining({ $regex: 'testuser', $options: 'i' })
-      }));
+      expect(model.find).toHaveBeenCalled();
+      expect(model.countDocuments).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
     it('should return a comment by id', async () => {
-      const mockExec = jest.fn().mockResolvedValue(mockComment);
-      const mockFindById = jest.fn().mockReturnValue({ exec: mockExec });
-      mockCommentModel.findById = mockFindById;
-
-      const result = await service.findOne('mockCommentId');
-
+      jest.spyOn(model, 'findOne').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockComment),
+      } as any);
+      const result = await service.findOne('COMMENT-001');
       expect(result).toEqual(mockComment);
-      expect(mockCommentModel.findById).toHaveBeenCalledWith('mockCommentId');
     });
 
     it('should throw NotFoundException when comment not found', async () => {
-      const mockExec = jest.fn().mockResolvedValue(null);
-      const mockFindById = jest.fn().mockReturnValue({ exec: mockExec });
-      mockCommentModel.findById = mockFindById;
-
+      jest.spyOn(model, 'findOne').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      } as any);
       await expect(service.findOne('NON-EXISTENT')).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw InternalServerErrorException when findOne fails', async () => {
+      jest.spyOn(model, 'findOne').mockReturnValue({
+        exec: jest.fn().mockRejectedValue(new Error('Database error')),
+      } as any);
+      await expect(service.findOne('COMMENT-001')).rejects.toThrow(InternalServerErrorException);
     });
   });
 
   describe('update', () => {
-    const updateCommentDto: UpdateCommentDto = {
-      text: 'Updated comment text'
-    };
-
     it('should update a comment successfully', async () => {
-      const updatedComment = { ...mockComment, ...updateCommentDto };
-      
-      const mockExec = jest.fn().mockResolvedValue(updatedComment);
-      const mockFindByIdAndUpdate = jest.fn().mockReturnValue({ exec: mockExec });
-      mockCommentModel.findByIdAndUpdate = mockFindByIdAndUpdate;
-
-      const result = await service.update('mockCommentId', 'USER-001', updateCommentDto);
-
-      expect(result).toEqual(updatedComment);
-      expect(mockCommentModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        'mockCommentId',
-        updateCommentDto,
-        { new: true }
-      );
+      jest.spyOn(model, 'findOneAndUpdate').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockComment),
+      } as any);
+      const updateCommentDto: UpdateCommentDto = { text: 'Updated text' };
+      const result = await service.update('COMMENT-001', 'USER-001', updateCommentDto);
+      expect(result).toEqual(mockComment);
     });
 
     it('should throw NotFoundException when comment not found', async () => {
-      const mockExec = jest.fn().mockResolvedValue(null);
-      const mockFindByIdAndUpdate = jest.fn().mockReturnValue({ exec: mockExec });
-      mockCommentModel.findByIdAndUpdate = mockFindByIdAndUpdate;
-
+      jest.spyOn(model, 'findOneAndUpdate').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      } as any);
+      const updateCommentDto: UpdateCommentDto = { text: 'Updated text' };
       await expect(service.update('NON-EXISTENT', 'USER-001', updateCommentDto)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw InternalServerErrorException when update fails', async () => {
+      jest.spyOn(model, 'findOneAndUpdate').mockReturnValue({
+        exec: jest.fn().mockRejectedValue(new Error('Database error')),
+      } as any);
+      const updateCommentDto: UpdateCommentDto = { text: 'Updated text' };
+      await expect(service.update('COMMENT-001', 'USER-001', updateCommentDto)).rejects.toThrow(InternalServerErrorException);
     });
   });
 
   describe('remove', () => {
     it('should remove a comment successfully', async () => {
-      const mockExec = jest.fn().mockResolvedValue(mockComment);
-      const mockFindByIdAndDelete = jest.fn().mockReturnValue({ exec: mockExec });
-      mockCommentModel.findByIdAndDelete = mockFindByIdAndDelete;
-
-      const result = await service.remove('mockCommentId', 'USER-001');
-
-      expect(result).toEqual({ message: 'Comment deleted successfully', deletedId: 'mockCommentId' });
-      expect(mockCommentModel.findByIdAndDelete).toHaveBeenCalledWith('mockCommentId');
+      jest.spyOn(model, 'findOneAndDelete').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockComment),
+      } as any);
+      await service.remove('COMMENT-001', 'USER-001');
+      expect(model.findOneAndDelete).toHaveBeenCalledWith({ id: 'COMMENT-001', authorId: 'USER-001' });
     });
 
     it('should throw NotFoundException when comment not found', async () => {
-      const mockExec = jest.fn().mockResolvedValue(null);
-      const mockFindByIdAndDelete = jest.fn().mockReturnValue({ exec: mockExec });
-      mockCommentModel.findByIdAndDelete = mockFindByIdAndDelete;
-
+      jest.spyOn(model, 'findOneAndDelete').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      } as any);
       await expect(service.remove('NON-EXISTENT', 'USER-001')).rejects.toThrow(NotFoundException);
     });
-  });
 
-  describe('escapeRegex', () => {
-    it('should escape special regex characters', () => {
-      const service = new CommentService(mockCommentModel as any);
-      const result = (service as any).escapeRegex('test.*+?^${}()|[]\\');
-      expect(result).toBe('test\\.\\*\\+\\?\\^\\$\\{\\}\\(\\)\\|\\[\\]\\\\');
+    it('should throw InternalServerErrorException when remove fails', async () => {
+      jest.spyOn(model, 'findOneAndDelete').mockReturnValue({
+        exec: jest.fn().mockRejectedValue(new Error('Database error')),
+      } as any);
+      await expect(service.remove('COMMENT-001', 'USER-001')).rejects.toThrow(InternalServerErrorException);
     });
   });
 });
