@@ -15,45 +15,95 @@ import { ApikeyGuard } from 'src/auth/guards/apikey.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiSecurity,
+} from '@nestjs/swagger';
 import { Logger } from './schemas/logger.schema';
 
 @UseGuards(ApikeyGuard)
 @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiTags('loggers')
 @Controller('loggers')
 export class LoggerController {
   constructor(private readonly loggerService: LoggerService) {}
 
   @Post()
   @Roles('usuario', 'administrador', 'super_administrador')
+  @ApiOperation({ summary: 'Crear un nuevo log de auditoria' })
+  @ApiResponse({
+    status: 201,
+    description: 'Log creado exitosamente',
+    type: Logger,
+  })
+  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBearerAuth('JWT-auth')
+  @ApiSecurity('api-key')
   create(@Body() createDto: CreateLoggerDto) {
     return this.loggerService.create(createDto);
   }
 
-  @ApiOperation({ summary: 'Get all loggers' })
-  @ApiResponse({ status: 200, description: 'List of loggers', type: [Logger] })
   @Get()
   @Roles('super_administrador')
+  @ApiOperation({ summary: 'Obtener todos los logs de auditoría' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de logs de auditoría',
+    type: [Logger],
+  })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBearerAuth('JWT-auth')
+  @ApiSecurity('api-key')
   findAll() {
     return this.loggerService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get logger by ID' })
-  @ApiResponse({ status: 200, description: 'Logger found', type: Logger })
   @Roles('super_administrador')
+  @ApiOperation({ summary: 'Obtener un log por ID' })
+  @ApiParam({ name: 'id', description: 'ID único del log' })
+  @ApiResponse({ status: 200, description: 'Log encontrado', type: Logger })
+  @ApiNotFoundResponse({ description: 'Log no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBearerAuth('JWT-auth')
+  @ApiSecurity('api-key')
   findOne(@Param('id') id: string) {
     return this.loggerService.findOne(id);
   }
-  //super --> no existe
   @Patch(':id')
   @Roles('super_administrador')
+  @ApiOperation({ summary: 'Actualizar un log por ID' })
+  @ApiParam({ name: 'id', description: 'ID único del log' })
+  @ApiResponse({
+    status: 200,
+    description: 'Log actualizado exitosamente',
+    type: Logger,
+  })
+  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
+  @ApiNotFoundResponse({ description: 'Log no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBearerAuth('JWT-auth')
+  @ApiSecurity('api-key')
   update(@Param('id') id: string, @Body() updateDto: UpdateLoggerDto) {
     return this.loggerService.update(id, updateDto);
   }
-  //super
   @Delete(':id')
   @Roles('super_administrador')
+  @ApiOperation({ summary: 'Eliminar un log por ID' })
+  @ApiParam({ name: 'id', description: 'ID único del log' })
+  @ApiResponse({ status: 200, description: 'Log eliminado exitosamente' })
+  @ApiNotFoundResponse({ description: 'Log no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBearerAuth('JWT-auth')
+  @ApiSecurity('api-key')
   remove(@Param('id') id: string) {
     return this.loggerService.remove(id);
   }

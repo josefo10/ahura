@@ -43,7 +43,10 @@ export class CommentService {
       if (q.assetId) filter.assetId = q.assetId;
       if (q.authorId) filter.authorId = q.authorId;
       if (q.userName)
-        filter.userName = { $regex: this.escapeRegex(q.userName), $options: 'i' };
+        filter.userName = {
+          $regex: this.escapeRegex(q.userName),
+          $options: 'i',
+        };
       if (q.text)
         filter.text = { $regex: this.escapeRegex(q.text), $options: 'i' };
       if (q.status) filter.status = q.status;
@@ -64,10 +67,7 @@ export class CommentService {
 
       if (q.q) {
         const r = { $regex: this.escapeRegex(q.q), $options: 'i' };
-        filter.$or = [
-          { userName: r },
-          { text: r },
-        ];
+        filter.$or = [{ userName: r }, { text: r }];
       }
 
       const page = Math.max(1, q.page || 1);
@@ -89,7 +89,12 @@ export class CommentService {
       }
 
       const [data, total] = await Promise.all([
-        this.commentModel.find(filter).sort(sort).skip(skip).limit(limit).exec(),
+        this.commentModel
+          .find(filter)
+          .sort(sort)
+          .skip(skip)
+          .limit(limit)
+          .exec(),
         this.commentModel.countDocuments(filter).exec(),
       ]);
 

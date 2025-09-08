@@ -12,98 +12,130 @@ import { CreateCatalogDto } from './dto/create-catalog.dto';
 import { UpdateCatalogDto } from './dto/update-catalog.dto';
 import { EnumItemDto } from './dto/enum-item.dto';
 import { CatalogListName } from './dto/list-name.type';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiSecurity,
+} from '@nestjs/swagger';
 
+@ApiTags('catalogs')
 @Controller('catalogs')
 export class CatalogController {
   constructor(private readonly service: CatalogService) {}
 
-  // CRUD base
-  @ApiOperation({ summary: 'Create a new catalog' })
+  @ApiOperation({ summary: 'Crear un nuevo catálogo' })
   @ApiResponse({
     status: 201,
-    description: 'The catalog has been created.',
+    description: 'Catálogo creado exitosamente',
     type: CreateCatalogDto,
   })
+  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @Post()
   create(@Body() dto: CreateCatalogDto) {
     return this.service.create(dto);
   }
 
-  @ApiOperation({ summary: 'Get all catalogs' })
+  @ApiOperation({ summary: 'Obtener todos los catálogos' })
   @ApiResponse({
     status: 200,
-    description: 'List of all catalogs',
+    description: 'Lista de todos los catálogos',
     type: [CreateCatalogDto],
   })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @Get()
   findAll() {
     return this.service.findAll();
   }
 
-  @ApiOperation({ summary: 'Get a catalog by slug' })
+  @ApiOperation({ summary: 'Obtener un catálogo por slug' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
   @ApiResponse({
     status: 200,
-    description: 'The catalog has been found.',
+    description: 'Catálogo encontrado',
     type: CreateCatalogDto,
   })
+  @ApiNotFoundResponse({ description: 'Catálogo no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @Get(':slug')
   get(@Param('slug') slug: string) {
     return this.service.get(slug);
   }
 
-  @ApiOperation({ summary: 'Update a catalog by slug' })
+  @Patch(':slug')
+  @ApiOperation({ summary: 'Actualizar un catálogo por slug' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
   @ApiResponse({
     status: 200,
-    description: 'The catalog has been updated.',
+    description: 'Catálogo actualizado exitosamente',
     type: CreateCatalogDto,
   })
-  @Patch(':slug')
+  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
+  @ApiNotFoundResponse({ description: 'Catálogo no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   update(@Param('slug') slug: string, @Body() dto: UpdateCatalogDto) {
     return this.service.update(slug, dto);
   }
 
-  @ApiOperation({ summary: 'Delete a catalog by slug' })
+  @Delete(':slug')
+  @ApiOperation({ summary: 'Eliminar un catálogo por slug' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
   @ApiResponse({
     status: 200,
-    description: 'The catalog has been deleted.',
+    description: 'Catálogo eliminado exitosamente',
   })
-  @Delete(':slug')
+  @ApiNotFoundResponse({ description: 'Catálogo no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   remove(@Param('slug') slug: string) {
     return this.service.remove(slug);
   }
 
-  // Utilidades (opcionales)
-  @ApiOperation({ summary: 'Get enum keys by catalog slug' })
+  @Get(':slug/enum-keys')
+  @ApiOperation({ summary: 'Obtener claves enum por slug de catálogo' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
   @ApiResponse({
     status: 200,
-    description: 'List of enum keys',
+    description: 'Lista de claves enum',
     type: [String],
   })
-  @Get(':slug/enum-keys')
+  @ApiNotFoundResponse({ description: 'Catálogo no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   getEnumKeys(@Param('slug') slug: string) {
     return this.service.getEnumKeys(slug);
   }
 
-  @ApiOperation({ summary: 'Get enum items by catalog slug' })
+  @Get(':slug/enum-items')
+  @ApiOperation({ summary: 'Obtener elementos enum por slug de catálogo' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
   @ApiResponse({
     status: 200,
-    description: 'List of enum items',
+    description: 'Lista de elementos enum',
     type: [EnumItemDto],
   })
-  @Get(':slug/enum-items')
+  @ApiNotFoundResponse({ description: 'Catálogo no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   getEnumItems(@Param('slug') slug: string) {
     return this.service.getEnumItems(slug);
   }
 
-  // Mutaciones de listas
-  @ApiOperation({ summary: 'Add an enum item by catalog slug' })
+  @Post(':slug/:listName')
+  @ApiOperation({ summary: 'Agregar un elemento enum por slug de catálogo' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
+  @ApiParam({ name: 'listName', description: 'Nombre de la lista enum' })
   @ApiResponse({
     status: 201,
-    description: 'The enum item has been added.',
+    description: 'Elemento enum agregado exitosamente',
     type: EnumItemDto,
   })
-  @Post(':slug/:listName')
+  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
+  @ApiNotFoundResponse({ description: 'Catálogo no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   addEnumItem(
     @Param('slug') slug: string,
     @Param('listName') listName: CatalogListName,
@@ -112,13 +144,19 @@ export class CatalogController {
     return this.service.addEnumItem(slug, listName, item);
   }
 
-  @ApiOperation({ summary: 'Update an enum item by catalog slug' })
+  @Patch(':slug/:listName/:key')
+  @ApiOperation({ summary: 'Actualizar un elemento enum por slug de catálogo' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
+  @ApiParam({ name: 'listName', description: 'Nombre de la lista enum' })
+  @ApiParam({ name: 'key', description: 'Clave del elemento enum' })
   @ApiResponse({
     status: 200,
-    description: 'The enum item has been updated.',
+    description: 'Elemento enum actualizado exitosamente',
     type: EnumItemDto,
   })
-  @Patch(':slug/:listName/:key')
+  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
+  @ApiNotFoundResponse({ description: 'Catálogo o elemento no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   updateEnumItem(
     @Param('slug') slug: string,
     @Param('listName') listName: CatalogListName,
@@ -128,12 +166,17 @@ export class CatalogController {
     return this.service.updateEnumItem(slug, listName, key, patch);
   }
 
-  @ApiOperation({ summary: 'Remove an enum item by catalog slug' })
+  @Delete(':slug/:listName/:key')
+  @ApiOperation({ summary: 'Eliminar un elemento enum por slug de catálogo' })
+  @ApiParam({ name: 'slug', description: 'Identificador único del catálogo' })
+  @ApiParam({ name: 'listName', description: 'Nombre de la lista enum' })
+  @ApiParam({ name: 'key', description: 'Clave del elemento enum' })
   @ApiResponse({
     status: 200,
-    description: 'The enum item has been removed.',
+    description: 'Elemento enum eliminado exitosamente',
   })
-  @Delete(':slug/:listName/:key')
+  @ApiNotFoundResponse({ description: 'Catálogo o elemento no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   removeEnumItem(
     @Param('slug') slug: string,
     @Param('listName') listName: CatalogListName,
