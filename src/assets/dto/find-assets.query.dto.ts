@@ -21,7 +21,10 @@ function toBool(v: any) {
 }
 
 export class FindAssetsQueryDto {
-  @IsOptional() @IsString() q?: string; // búsqueda global (title, description, keywords)
+  // Búsqueda global (sobre title, description, keywords)
+  @IsOptional() @IsString() q?: string;
+
+  // Campos base
   @IsOptional() @IsString() title?: string; // regex i
   @IsOptional() @IsString() description?: string; // regex i
   @IsOptional() @IsString() knowledgeType?: string; // exact
@@ -33,21 +36,61 @@ export class FindAssetsQueryDto {
   @IsOptional() @IsString() ownerId?: string;
   @IsOptional() @IsString() responsibleOwner?: string; // regex i
 
-  @IsOptional() @IsString() publishFrom?: string; // ISO date
+  // Rango de fechas
+  @IsOptional() @IsString() publishFrom?: string; // ISO
   @IsOptional() @IsString() publishTo?: string;
 
-  @IsOptional() @Transform(({ value }) => toArray(value)) keywords?: string[]; // lista CSV
+  // Arrays
+  @IsOptional() @Transform(({ value }) => toArray(value)) keywords?: string[];
+  @IsOptional() @Transform(({ value }) => toArray(value)) ids?: string[]; // Mongo _id (opcional)
+  @IsOptional()
+  @Transform(({ value }) => toArray(value))
+  businessIds?: string[]; // campo 'id' de negocio
+
+  // Booleanos
   @IsOptional()
   @Transform(({ value }) => toBool(value))
   @IsBoolean()
   confidentiality?: boolean;
 
-  // ids=aaa,bbb (Mongo _id opcional si lo usan), o id de negocio (campo 'id')
-  @IsOptional() @Transform(({ value }) => toArray(value)) ids?: string[];
-  @IsOptional()
-  @Transform(({ value }) => toArray(value))
-  businessIds?: string[];
+  // --------- SUBNIVELES (MÍNIMO CAMBIO) ----------
 
+  // availability.*
+  @IsOptional()
+  @Transform(({ value }) => toBool(value))
+  @IsBoolean()
+  availabilityAccessibility?: boolean;
+
+  @IsOptional()
+  @IsString()
+  availabilityLocation?: string; // regex i
+
+  // classificationLevel.level
+  @IsOptional()
+  @IsString()
+  classificationLevelLevel?: string;
+
+  // howIsItStored.*
+  @IsOptional()
+  @IsString()
+  howPecetKnowledge?: string; // regex i
+
+  @IsOptional()
+  @IsString()
+  howCentralicedRepositories?: string; // regex i
+
+  // legalRegulations.* (cada subcampo)
+  @IsOptional() @IsString() legalCopyright?: string; // regex i
+  @IsOptional() @IsString() legalPatents?: string; // regex i
+  @IsOptional() @IsString() legalTradeSecrets?: string; // regex i
+  @IsOptional() @IsString() legalIndustrialDesigns?: string; // regex i
+  @IsOptional() @IsString() legalBrands?: string; // regex i
+  @IsOptional() @IsString() legalIndustrialIntellectualProperty?: string; // regex i
+
+  // Atajo: buscar en TODOS los subcampos legales
+  @IsOptional() @IsString() legalAny?: string;
+
+  // Paginación / orden
   @IsOptional() @IsString() sort?: string; // "-publishDate,title"
   @IsOptional() @Type(() => Number) @IsInt() page: number = 1;
   @IsOptional() @Type(() => Number) @IsInt() limit: number = 20;
