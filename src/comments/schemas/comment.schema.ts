@@ -31,7 +31,7 @@ export class Comment {
   status: string;
 
   @ApiProperty({ description: 'The creation date of the comment' })
-  @Prop({ required: true })
+  @Prop({ default: Date.now })
   createdAt: Date;
 }
 
