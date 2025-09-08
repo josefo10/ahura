@@ -1,8 +1,8 @@
-import { IsOptional, IsString, IsInt, IsBoolean } from 'class-validator';
+import { IsOptional, IsString, IsInt } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 function toArray(val: any): string[] {
-  if (Array.isArray(val)) return val;
+  if (Array.isArray(val)) return val as string[];
   if (typeof val === 'string')
     return val
       .split(',')

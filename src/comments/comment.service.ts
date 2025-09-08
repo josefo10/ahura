@@ -52,9 +52,10 @@ export class CommentService {
       if (q.status) filter.status = q.status;
 
       if (q.createdFrom || q.createdTo) {
-        filter.createdAt = {};
-        if (q.createdFrom) filter.createdAt.$gte = new Date(q.createdFrom);
-        if (q.createdTo) filter.createdAt.$lte = new Date(q.createdTo);
+        const dateFilter: { $gte?: Date; $lte?: Date } = {};
+        if (q.createdFrom) dateFilter.$gte = new Date(q.createdFrom);
+        if (q.createdTo) dateFilter.$lte = new Date(q.createdTo);
+        filter.createdAt = dateFilter;
       }
 
       if (q.assetIds?.length) {

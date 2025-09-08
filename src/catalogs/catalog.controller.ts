@@ -16,12 +16,10 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
-  ApiBearerAuth,
   ApiParam,
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
-  ApiSecurity,
 } from '@nestjs/swagger';
 
 @ApiTags('catalogs')
