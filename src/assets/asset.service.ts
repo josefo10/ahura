@@ -9,7 +9,7 @@ import { Model, FilterQuery, SortOrder, Types } from 'mongoose';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { Asset, AssetDocument } from './schemas/asset.schema';
-import { CatalogService } from 'src/catalogs/catalog.service';
+import { CatalogService } from '../catalogs/catalog.service';
 import { FindAssetsQueryDto } from './dto/find-assets.query.dto';
 
 @Injectable()

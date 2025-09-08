@@ -20,6 +20,20 @@ describe('UploadService', () => {
           return null;
       }
     }),
+    getOrThrow: jest.fn().mockImplementation((key) => {
+      switch (key) {
+        case 'AWS_S3_REGION':
+          return 'us-east-1';
+        case 'AWS_ACCESS_KEY_ID':
+          return 'test-access-key';
+        case 'AWS_SECRET_ACCESS_KEY':
+          return 'test-secret-key';
+        case 'AWS_S3_BUCKET':
+          return 'test-bucket';
+        default:
+          throw new Error(`Configuration key ${key} not found`);
+      }
+    }),
   };
 
   beforeEach(async () => {

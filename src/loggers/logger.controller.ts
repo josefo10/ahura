@@ -11,10 +11,10 @@ import {
 import { LoggerService } from './logger.service';
 import { CreateLoggerDto } from './dto/create-logger.dto';
 import { UpdateLoggerDto } from './dto/update-logger.dto';
-import { ApikeyGuard } from 'src/auth/guards/apikey.guard';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ApikeyGuard } from '../auth/guards/apikey.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import {
   ApiOperation,
   ApiResponse,

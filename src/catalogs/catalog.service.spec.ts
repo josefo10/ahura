@@ -144,8 +144,9 @@ describe('CatalogService', () => {
 
   describe('update', () => {
     const updateCatalogDto: UpdateCatalogDto = {
-      displayName: 'Updated Catalog',
-      description: 'Updated description'
+      knowledgeTypeEnum: [
+        { key: 'updated', descripcion: 'Updated Knowledge Type', isActive: true }
+      ]
     };
 
     it('should update a catalog successfully', async () => {

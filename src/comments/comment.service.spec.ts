@@ -74,15 +74,20 @@ describe('CommentService', () => {
     };
 
     it('should create a comment successfully', async () => {
-      const mockSave = jest.fn().mockResolvedValue({ ...mockComment, ...createCommentDto });
-      mockCommentModel.constructor = jest.fn().mockImplementation(() => ({
+      const createdComment = { ...mockComment, ...createCommentDto };
+      const mockSave = jest.fn().mockResolvedValue(createdComment);
+      
+      // Mock the constructor to return an object with save method
+      (mockCommentModel as any).mockImplementation(() => ({
+        ...createCommentDto,
         save: mockSave
       }));
 
       const result = await service.create(createCommentDto);
 
-      expect(mockCommentModel.constructor).toHaveBeenCalledWith(createCommentDto);
-      expect(result).toBeDefined();
+      expect(mockCommentModel).toHaveBeenCalledWith(createCommentDto);
+      expect(mockSave).toHaveBeenCalled();
+      expect(result).toEqual(createdComment);
     });
 
     it('should throw InternalServerErrorException when creation fails', async () => {
