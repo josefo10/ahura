@@ -27,22 +27,26 @@ describe('CatalogService', () => {
     save: jest.fn().mockResolvedValue(this)
   };
 
-  const mockCatalogModel = {
-    new: jest.fn().mockImplementation((dto) => ({
-      ...dto,
-      save: jest.fn().mockResolvedValue({ ...mockCatalog, ...dto })
-    })),
-    constructor: jest.fn().mockImplementation((dto) => ({
-      ...dto,
-      save: jest.fn().mockResolvedValue({ ...mockCatalog, ...dto })
-    })),
-    find: jest.fn(),
-    findOne: jest.fn(),
-    findOneAndUpdate: jest.fn(),
-    findOneAndDelete: jest.fn(),
-    exists: jest.fn(),
-    lean: jest.fn(),
-  };
+  const mockCatalogModel = jest.fn().mockImplementation((dto) => ({
+    ...dto,
+    save: jest.fn().mockResolvedValue({ ...mockCatalog, ...dto })
+  }));
+
+  // Add static methods
+  Object.assign(mockCatalogModel, {
+    find: jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue([mockCatalog])
+    }),
+    findOne: jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(mockCatalog)
+    }),
+    findOneAndUpdate: jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue(mockCatalog)
+    }),
+    findOneAndDelete: jest.fn().mockResolvedValue(mockCatalog),
+    deleteOne: jest.fn().mockResolvedValue({ deletedCount: 1 }),
+    exists: jest.fn().mockResolvedValue(null),
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

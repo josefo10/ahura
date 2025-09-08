@@ -36,22 +36,35 @@ describe('AssetService', () => {
     save: jest.fn().mockResolvedValue(this)
   };
 
-  const mockAssetModel = {
-    new: jest.fn().mockImplementation((dto) => ({
-      ...dto,
-      save: jest.fn().mockResolvedValue({ ...mockAsset, ...dto })
-    })),
-    constructor: jest.fn().mockImplementation((dto) => ({
-      ...dto,
-      save: jest.fn().mockResolvedValue({ ...mockAsset, ...dto })
-    })),
-    find: jest.fn(),
-    findOne: jest.fn(),
-    findOneAndUpdate: jest.fn(),
-    findOneAndDelete: jest.fn(),
-    countDocuments: jest.fn(),
-    exec: jest.fn(),
-  };
+  const mockAssetModel = jest.fn().mockImplementation((dto) => ({
+    ...dto,
+    save: jest.fn().mockResolvedValue({ ...mockAsset, ...dto })
+  }));
+
+  // Add static methods
+  Object.assign(mockAssetModel, {
+    find: jest.fn().mockReturnValue({
+      sort: jest.fn().mockReturnValue({
+        limit: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            exec: jest.fn().mockResolvedValue([mockAsset])
+          })
+        })
+      })
+    }),
+    findOne: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockAsset)
+    }),
+    findOneAndUpdate: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockAsset)
+    }),
+    findOneAndDelete: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockAsset)
+    }),
+    countDocuments: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(1)
+    }),
+  });
 
   const mockCatalogService = {
     validateAssetEnums: jest.fn().mockResolvedValue(true),

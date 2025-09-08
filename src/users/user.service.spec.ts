@@ -30,22 +30,40 @@ describe('UserService', () => {
     })
   };
 
-  const mockUserModel = {
-    new: jest.fn().mockImplementation((dto) => ({
-      ...dto,
-      save: jest.fn().mockResolvedValue({ ...mockUser, ...dto, toJSON: mockUser.toJSON })
-    })),
-    constructor: jest.fn().mockImplementation((dto) => ({
-      ...dto,
-      save: jest.fn().mockResolvedValue({ ...mockUser, ...dto, toJSON: mockUser.toJSON })
-    })),
-    find: jest.fn(),
-    findById: jest.fn(),
-    findByIdAndUpdate: jest.fn(),
-    findByIdAndDelete: jest.fn(),
-    findOne: jest.fn(),
-    exec: jest.fn(),
-  };
+  const mockUserModel = jest.fn().mockImplementation((dto) => ({
+    ...dto,
+    password: dto.password,
+    role: 'user',
+    save: jest.fn().mockResolvedValue({ 
+      ...mockUser, 
+      ...dto, 
+      toJSON: () => ({
+        _id: 'mockUserId',
+        name: dto.name,
+        email: dto.email,
+        role: 'user'
+      })
+    })
+  }));
+
+  // Add static methods
+  Object.assign(mockUserModel, {
+    find: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue([mockUser])
+    }),
+    findById: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockUser)
+    }),
+    findByIdAndUpdate: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockUser)
+    }),
+    findByIdAndDelete: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockUser)
+    }),
+    findOne: jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(null)
+    }),
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
