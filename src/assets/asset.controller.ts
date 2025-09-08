@@ -50,6 +50,7 @@ export class AssetController {
   @ApiBearerAuth('JWT-auth')
   @ApiSecurity('api-key')
   create(@Body() dto: CreateAssetDto) {
+    console.log('dto');
     return this.assetService.create(dto);
   }
 

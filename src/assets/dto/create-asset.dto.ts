@@ -1,7 +1,3 @@
-import { Availability } from '../schemas/asset.schema';
-import { ClassificationLevel } from '../schemas/asset.schema';
-import { HowIsItStored } from '../schemas/asset.schema';
-import { LegalRegulations } from '../schemas/asset.schema';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
@@ -13,8 +9,72 @@ import {
   IsNumber,
   ValidateNested,
   IsUrl,
+  IsISO8601,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
+
+export class CreateAvailabilityDto {
+  @ApiProperty({ description: 'Indicates if the asset is accessible' })
+  @IsNotEmpty()
+  @IsBoolean()
+  readonly accessibility: boolean;
+
+  @ApiProperty({ description: 'The location of the asset' })
+  @IsNotEmpty()
+  @IsString()
+  readonly location: string;
+}
+
+export class CreateClassificationLevelDto {
+  @ApiProperty({ description: 'The classification level of the asset' })
+  @IsNotEmpty()
+  @IsString()
+  readonly level: string;
+}
+
+export class CreateHowIsItStoredDto {
+  @ApiProperty({ description: 'The knowledge type of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly pecetKnowledge?: string;
+
+  @ApiProperty({ description: 'The centralized repositories of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly centralicedRepositories?: string;
+}
+
+export class CreateLegalRegulationsDto {
+  @ApiProperty({ description: 'The legal regulations of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly copyright?: string;
+
+  @ApiProperty({ description: 'The patents of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly patents?: string;
+
+  @ApiProperty({ description: 'The trade secrets of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly tradeSecrets?: string;
+
+  @ApiProperty({ description: 'The industrial designs of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly industrialDesigns?: string;
+
+  @ApiProperty({ description: 'The brands of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly brands?: string;
+
+  @ApiProperty({ description: 'The industrial intellectual property of the asset', required: false })
+  @IsOptional()
+  @IsString()
+  readonly industrialIntellectualProperty?: string;
+}
 
 export class CreateAssetDto {
   @ApiProperty({ description: 'ID único del activo', example: 'ASSET-001' })
@@ -35,8 +95,14 @@ export class CreateAssetDto {
     example: '2024-01-15T10:00:00Z',
   })
   @IsNotEmpty()
-  @IsDateString()
-  readonly publishDate: Date;
+  @IsISO8601({ strict: false })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return new Date(value).toISOString();
+    }
+    return value;
+  })
+  readonly publishDate: string;
 
   @ApiProperty({
     description: 'Tipo de conocimiento',
@@ -114,20 +180,20 @@ export class CreateAssetDto {
   @ApiProperty({ description: 'Disponibilidad del activo' })
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => Object)
-  readonly availability: Availability;
+  @Type(() => CreateAvailabilityDto)
+  readonly availability: CreateAvailabilityDto;
 
   @ApiProperty({ description: 'Nivel de clasificación del activo' })
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => Object)
-  readonly classificationLevel: ClassificationLevel;
+  @Type(() => CreateClassificationLevelDto)
+  readonly classificationLevel: CreateClassificationLevelDto;
 
   @ApiProperty({ description: 'Cómo se almacena el activo', required: false })
   @IsOptional()
   @ValidateNested()
-  @Type(() => Object)
-  readonly howIsItStored?: HowIsItStored;
+  @Type(() => CreateHowIsItStoredDto)
+  readonly howIsItStored?: CreateHowIsItStoredDto;
 
   @ApiProperty({
     description: 'Regulaciones legales del activo',
@@ -135,8 +201,8 @@ export class CreateAssetDto {
   })
   @IsOptional()
   @ValidateNested()
-  @Type(() => Object)
-  readonly legalRegulations?: LegalRegulations;
+  @Type(() => CreateLegalRegulationsDto)
+  readonly legalRegulations?: CreateLegalRegulationsDto;
 
   @ApiProperty({ description: 'ID del propietario', example: 'USER-123' })
   @IsNotEmpty()

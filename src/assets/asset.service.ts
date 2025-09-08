@@ -27,6 +27,7 @@ export class AssetService {
       // 2) normaliza opcionales para evitar undefined vs string
       const payload: Partial<Asset> = {
         ...createAssetDto,
+        publishDate: new Date(createAssetDto.publishDate),
         description: createAssetDto.description ?? '',
         image: createAssetDto.image ?? '',
         activeKnowledgeType: createAssetDto.activeKnowledgeType ?? '',
@@ -39,6 +40,18 @@ export class AssetService {
         criticality: createAssetDto.criticality ?? 'leve',
         status: createAssetDto.status ?? 'en curso',
         origin: createAssetDto.origin ?? 'interno',
+        howIsItStored: createAssetDto.howIsItStored ? {
+          pecetKnowledge: createAssetDto.howIsItStored.pecetKnowledge ?? '',
+          centralicedRepositories: createAssetDto.howIsItStored.centralicedRepositories ?? '',
+        } : undefined,
+        legalRegulations: createAssetDto.legalRegulations ? {
+          copyright: createAssetDto.legalRegulations.copyright ?? '',
+          patents: createAssetDto.legalRegulations.patents ?? '',
+          tradeSecrets: createAssetDto.legalRegulations.tradeSecrets ?? '',
+          industrialDesigns: createAssetDto.legalRegulations.industrialDesigns ?? '',
+          brands: createAssetDto.legalRegulations.brands ?? '',
+          industrialIntellectualProperty: createAssetDto.legalRegulations.industrialIntellectualProperty ?? '',
+        } : undefined,
       };
 
       const created = new this.assetModel(payload);

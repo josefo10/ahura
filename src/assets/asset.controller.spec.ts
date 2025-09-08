@@ -81,7 +81,7 @@ describe('AssetController', () => {
       title: 'Test Asset',
       description: 'Test description',
       knowledgeType: 'Documentation',
-      publishDate: new Date(),
+      publishDate: '2025-09-04T00:00:00.000Z',
       ownerId: 'USER-001',
       origin: 'interno',
       availability: {
