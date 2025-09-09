@@ -7,7 +7,7 @@ import {
   ValidateNested,
   IsArray,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Exclude } from 'class-transformer';
 
 export class CreateCatalogDto {
   @ApiProperty({
@@ -126,4 +126,7 @@ export class CreateCatalogDto {
   @ValidateNested()
   @Type(() => EnumItemDto)
   repositoryEnum?: EnumItemDto;
+
+  @Exclude()
+  updatedAt?: any;
 }
