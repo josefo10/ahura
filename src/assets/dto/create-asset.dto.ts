@@ -122,12 +122,12 @@ export class CreateAssetDto {
   readonly description?: string;
 
   @ApiProperty({
-    description: 'URL de imagen del activo',
-    example: 'https://example.com/image.jpg',
+    description: 'Imagen del activo',
+    example: 'imagen.jpg',
     required: false,
   })
   @IsOptional()
-  @IsUrl()
+  @IsString()
   readonly image?: string;
 
   @ApiProperty({
