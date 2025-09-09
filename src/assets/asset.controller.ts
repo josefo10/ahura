@@ -28,8 +28,10 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiSecurity,
+  ApiHeader,
 } from '@nestjs/swagger';
 import { Asset } from './schemas/asset.schema';
+import { ApiAuthHeaders } from '../common/decorators/api-headers.decorator';
 
 @ApiTags('assets')
 @Controller('assets')
@@ -49,6 +51,7 @@ export class AssetController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth('JWT-auth')
   @ApiSecurity('api-key')
+  @ApiAuthHeaders()
   create(@Body() dto: CreateAssetDto) {
     console.log('dto');
     return this.assetService.create(dto);
@@ -136,6 +139,7 @@ export class AssetController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth('JWT-auth')
   @ApiSecurity('api-key')
+  @ApiAuthHeaders()
   update(@Param('id') id: string, @Body() dto: UpdateAssetDto) {
     return this.assetService.update(id, dto);
   }
@@ -150,6 +154,7 @@ export class AssetController {
   @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
   @ApiBearerAuth('JWT-auth')
   @ApiSecurity('api-key')
+  @ApiAuthHeaders()
   remove(@Param('id') id: string) {
     return this.assetService.remove(id);
   }
