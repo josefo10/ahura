@@ -12,6 +12,7 @@ import {
 import { AssetService } from './asset.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
+import { UpdateAssetUserDto } from './dto/update-asset-user.dto';
 import { FindAssetsQueryDto } from './dto/find-assets.query.dto';
 import { ApikeyGuard } from '../auth/guards/apikey.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -140,6 +141,28 @@ export class AssetController {
   @ApiSecurity('api-key')
   @ApiAuthHeaders()
   update(@Param('id') id: string, @Body() dto: UpdateAssetDto) {
+    return this.assetService.update(id, dto);
+  }
+
+  @Patch(':id/user-stats')
+  @UseGuards(ApikeyGuard, JwtAuthGuard, RolesGuard)
+  @Roles('usuario')
+  @ApiOperation({
+    summary: 'Actualizar estadísticas del activo (solo para usuarios)',
+  })
+  @ApiParam({ name: 'id', description: 'ID único del activo' })
+  @ApiResponse({
+    status: 200,
+    description: 'Estadísticas del activo actualizadas exitosamente',
+    type: Asset,
+  })
+  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos' })
+  @ApiNotFoundResponse({ description: 'Activo no encontrado' })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor' })
+  @ApiBearerAuth('JWT-auth')
+  @ApiSecurity('api-key')
+  @ApiAuthHeaders()
+  updateUserStats(@Param('id') id: string, @Body() dto: UpdateAssetUserDto) {
     return this.assetService.update(id, dto);
   }
 
