@@ -28,7 +28,6 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiSecurity,
-  ApiHeader,
 } from '@nestjs/swagger';
 import { Asset } from './schemas/asset.schema';
 import { ApiAuthHeaders } from '../common/decorators/api-headers.decorator';
