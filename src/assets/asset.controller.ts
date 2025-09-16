@@ -146,7 +146,7 @@ export class AssetController {
 
   @Patch(':id/user-stats')
   @UseGuards(ApikeyGuard, JwtAuthGuard, RolesGuard)
-  @Roles('usuario')
+  @Roles('usuario', 'administrador', 'super_administrador')
   @ApiOperation({
     summary: 'Actualizar estadísticas del activo (solo para usuarios)',
   })
